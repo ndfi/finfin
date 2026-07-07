@@ -152,9 +152,11 @@ export default function ChatInterface({ user, monthlySummary, budgets }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[var(--paper)] rounded-2xl border border-[var(--ink)]/10 overflow-hidden">
-      <div className="px-4 py-3 border-b border-[var(--ink)]/10 flex items-center gap-2 bg-[var(--forest)] text-[var(--paper)]">
-        <Receipt size={18} />
+    <div className="flex flex-col h-full bg-white rounded-3xl card-shadow overflow-hidden">
+      <div className="px-4 py-3.5 flex items-center gap-2 hero-gradient text-white">
+        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
+          <Receipt size={15} />
+        </span>
         <h2 className="font-semibold text-sm">היומן הכספי</h2>
       </div>
 
@@ -164,21 +166,21 @@ export default function ChatInterface({ user, monthlySummary, budgets }) {
         ))}
       </div>
 
-      <form onSubmit={handleSend} className="p-3 border-t border-[var(--ink)]/10 flex gap-2 bg-[var(--paper)]">
+      <form onSubmit={handleSend} className="p-3 border-t border-[var(--ink)]/8 flex gap-2 bg-white">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder='למשל: "הוצאתי 300 בסופר" או "כמה נשאר לי על מסעדות?"'
+          placeholder='למשל: "הוצאתי 300 בסופר"'
           dir="rtl"
-          className="flex-1 rounded-xl border border-[var(--ink)]/15 px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--gold)] placeholder:text-[var(--ink)]/40"
+          className="flex-1 rounded-full border border-[var(--ink)]/12 px-4 py-3 text-sm bg-[var(--bg)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)] placeholder:text-[var(--ink)]/40"
         />
         <button
           type="submit"
-          className="shrink-0 rounded-xl bg-[var(--forest)] text-white px-4 py-2.5 hover:bg-[var(--forest-dark)] transition-colors"
+          className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-[var(--teal)] text-white hover:bg-[var(--teal-dark)] active:scale-95 transition-all"
           aria-label="שלח"
         >
-          <Send size={18} className="-scale-x-100" />
+          <Send size={17} className="-scale-x-100" />
         </button>
       </form>
     </div>

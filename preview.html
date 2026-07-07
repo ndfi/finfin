@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>גבל'לי כספים — תצוגה מקדימה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Frank+Ruhl+Libre:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F3F1EC;
+    --paper: #FFFFFF;
+    --ink: #17181C;
+    --ink-soft: rgba(23,24,28,0.55);
+    --ink-faint: rgba(23,24,28,0.38);
+    --teal: #05A67C;
+    --teal-deep: #048C68;
+    --coral: #FF5A5A;
+    --gold: #FFC93C;
+    --gold-deep: #E0A800;
+    --line: rgba(23,24,28,0.08);
+    --shadow: 0 12px 32px -14px rgba(23,24,28,0.22);
+    --shadow-soft: 0 4px 14px -8px rgba(23,24,28,0.16);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    font-family: 'Rubik', system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .display { font-family: 'Frank Ruhl Libre', serif; }
+
+  /* Phone-frame simulation so this reads clearly as a mobile screen */
+  .frame-wrap {
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 28px 12px;
+  }
+  .phone {
+    width: 100%;
+    max-width: 402px;
+    background: var(--bg);
+    border-radius: 40px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.35), 0 0 0 10px #0d0e10, 0 0 0 12px #2a2b2e;
+    overflow: hidden;
+    position: relative;
+    min-height: 860px;
+  }
+  .notch {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 22px; background: #0d0e10; border-radius: 20px; z-index: 50;
+  }
+  .screen { padding-top: 34px; padding-bottom: 90px; }
+
+  /* ---------- Header ---------- */
+  header {
+    background: var(--teal);
+    color: white;
+    padding: 14px 18px 18px;
+    border-radius: 0 0 28px 28px;
+  }
+  .header-row1 {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 12px; background: rgba(255,255,255,0.22);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .brand h1 { font-size: 16px; margin: 0; font-weight: 700; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 999px; background: rgba(255,255,255,0.2);
+    border: none; color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 15px; cursor: pointer; transition: background .15s, transform .1s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.32); }
+  .icon-btn:active { transform: scale(0.94); }
+  .header-actions { display: flex; gap: 8px; }
+  .month-switch {
+    display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 14px;
+  }
+  .month-switch span { font-size: 13px; font-weight: 600; min-width: 90px; text-align: center; }
+
+  /* ---------- Content ---------- */
+  main { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ---------- Balance hero card ---------- */
+  .hero-card {
+    background: var(--teal);
+    border-radius: 28px;
+    padding: 20px 18px 22px;
+    box-shadow: var(--shadow);
+    color: white;
+  }
+  .hero-card .label { font-size: 12.5px; opacity: 0.85; margin: 0; }
+  .hero-card .balance {
+    font-size: 40px; font-weight: 800; margin: 4px 0 16px; letter-spacing: -0.5px;
+  }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-pill {
+    border-radius: 18px; padding: 12px 14px; box-shadow: var(--shadow-soft);
+  }
+  .stat-pill.income { background: white; color: var(--ink); }
+  .stat-pill.expense { background: var(--ink); color: white; }
+  .stat-pill .stat-label { font-size: 10.5px; letter-spacing: 0.4px; opacity: 0.6; font-weight: 700; text-transform: uppercase; }
+  .stat-pill .stat-value { font-size: 19px; font-weight: 800; margin-top: 3px; }
+  .stat-pill .stat-sub { font-size: 11px; opacity: 0.55; margin-top: 2px; }
+  .pill-btn {
+    margin-top: 10px; width: 100%; border: none; border-radius: 999px; padding: 10px 0;
+    font-size: 13px; font-weight: 700; cursor: pointer; transition: transform .1s;
+  }
+  .pill-btn:active { transform: scale(0.97); }
+  .pill-btn.income-btn { background: var(--gold); color: var(--ink); }
+  .pill-btn.expense-btn { background: rgba(255,255,255,0.15); color: white; }
+
+  /* ---------- Category donut card ---------- */
+  .card {
+    background: var(--paper); border-radius: 24px; padding: 18px; box-shadow: var(--shadow-soft);
+  }
+  .card h2 {
+    font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 0 0 14px;
+  }
+  .donut-row { display: flex; align-items: center; gap: 18px; }
+  .donut { width: 108px; height: 108px; position: relative; flex-shrink: 0; }
+  .donut svg { transform: rotate(-90deg); }
+  .donut-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .donut-center .amt { font-size: 14px; font-weight: 800; }
+  .donut-center .lbl { font-size: 9px; color: var(--ink-faint); }
+  .legend { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+  .legend-left { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .legend-right { display: flex; align-items: center; gap: 8px; }
+  .legend-pct { font-size: 11px; color: var(--ink-faint); }
+  .legend-amt { font-weight: 700; font-size: 12.5px; }
+
+  /* ---------- Transactions list ---------- */
+  .tx-date-label {
+    font-size: 12px; font-weight: 700; color: var(--ink-soft); margin: 4px 2px 2px;
+    display: flex; justify-content: space-between;
+  }
+  .tx-row {
+    background: var(--paper); border-radius: 20px; padding: 12px 14px; box-shadow: var(--shadow-soft);
+    display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+  }
+  .tx-icon {
+    width: 40px; height: 40px; border-radius: 14px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-title { font-size: 13.5px; font-weight: 700; }
+  .tx-meta { font-size: 11px; color: var(--ink-faint); margin-top: 2px; display: flex; gap: 6px; align-items: center; }
+  .tx-badge {
+    background: var(--bg); border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 600; color: var(--ink-soft);
+  }
+  .tx-amount { font-weight: 800; font-size: 14px; white-space: nowrap; }
+  .tx-amount.neg { color: var(--coral); }
+  .tx-amount.pos { color: var(--teal-deep); }
+
+  /* ---------- Budgets ---------- */
+  .budget-card {
+    background: var(--paper); border-radius: 20px; padding: 14px 16px; box-shadow: var(--shadow-soft); margin-bottom: 10px;
+  }
+  .budget-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .budget-left { display: flex; align-items: center; gap: 10px; }
+  .budget-icon { width: 34px; height: 34px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .budget-name { font-size: 13.5px; font-weight: 700; }
+  .budget-amounts { font-size: 11.5px; color: var(--ink-faint); font-weight: 600; }
+  .track { height: 9px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; }
+  .add-budget {
+    width: 100%; border: 2px dashed var(--line); border-radius: 20px; padding: 14px;
+    background: transparent; color: var(--ink-faint); font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+  }
+
+  /* ---------- Bottom nav ---------- */
+  .bottom-nav {
+    position: absolute; bottom: 14px; left: 14px; right: 14px;
+    background: var(--ink); border-radius: 999px; padding: 6px; display: flex; gap: 4px;
+    box-shadow: 0 14px 30px -10px rgba(0,0,0,0.45); z-index: 40;
+  }
+  .nav-btn {
+    flex: 1; border: none; background: transparent; color: rgba(255,255,255,0.55);
+    border-radius: 999px; padding: 10px 0; font-size: 11.5px; font-weight: 700;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
+  }
+  .nav-btn.active { background: var(--teal); color: white; }
+  .nav-icon { font-size: 16px; }
+
+  .note {
+    max-width: 402px; margin: 18px auto 0; text-align: center; font-size: 12.5px; color: var(--ink-faint);
+  }
+</style>
+</head>
+<body>
+<div class="frame-wrap">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+
+      <header>
+        <div class="header-row1">
+          <div class="brand">
+            <span class="logo">💰</span>
+            <h1>גבל'לי כספים</h1>
+          </div>
+          <div class="header-actions">
+            <button class="icon-btn" title="איפוס נתוני החודש">↻</button>
+            <button class="icon-btn" title="התנתקות">⏻</button>
+          </div>
+        </div>
+        <div class="month-switch">
+          <button class="icon-btn" style="width:30px;height:30px;font-size:12px;">›</button>
+          <span>יולי 2026</span>
+          <button class="icon-btn" style="width:30px;height:30px;font-size:12px;">‹</button>
+        </div>
+      </header>
+
+      <main>
+
+        <!-- Balance hero -->
+        <section class="hero-card">
+          <p class="label">יולי 2026 · יתרה</p>
+          <p class="balance">7,158&nbsp;₪</p>
+          <div class="stat-row">
+            <div class="stat-pill income">
+              <div class="stat-label">הכנסות</div>
+              <div class="stat-value">8,000 ₪</div>
+              <div class="stat-sub">1 תנועה</div>
+              <button class="pill-btn income-btn">+ הכנסה חדשה</button>
+            </div>
+            <div class="stat-pill expense">
+              <div class="stat-label">הוצאות</div>
+              <div class="stat-value">842 ₪</div>
+              <div class="stat-sub">3 תנועות</div>
+              <button class="pill-btn expense-btn">+ הוצאה חדשה</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Category breakdown -->
+        <section class="card">
+          <h2>התפלגות לפי קטגוריה</h2>
+          <div class="donut-row">
+            <div class="donut">
+              <svg width="108" height="108" viewBox="0 0 108 108">
+                <circle cx="54" cy="54" r="42" fill="none" stroke="#EFEDE7" stroke-width="16"/>
+                <circle cx="54" cy="54" r="42" fill="none" stroke="#05A67C" stroke-width="16"
+                  stroke-dasharray="180 264" stroke-linecap="round"/>
+                <circle cx="54" cy="54" r="42" fill="none" stroke="#FFC93C" stroke-width="16"
+                  stroke-dasharray="60 264" stroke-dashoffset="-180" stroke-linecap="round"/>
+                <circle cx="54" cy="54" r="42" fill="none" stroke="#FF5A5A" stroke-width="16"
+                  stroke-dasharray="24 264" stroke-dashoffset="-240" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-center">
+                <span class="amt">842 ₪</span>
+                <span class="lbl">סה"כ</span>
+              </div>
+            </div>
+            <div class="legend">
+              <div class="legend-row">
+                <div class="legend-left"><span class="dot" style="background:#05A67C"></span>סופרמרקט</div>
+                <div class="legend-right"><span class="legend-pct">68%</span><span class="legend-amt">572 ₪</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-left"><span class="dot" style="background:#FFC93C"></span>בילויים</div>
+                <div class="legend-right"><span class="legend-pct">23%</span><span class="legend-amt">195 ₪</span></div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-left"><span class="dot" style="background:#FF5A5A"></span>תחבורה</div>
+                <div class="legend-right"><span class="legend-pct">9%</span><span class="legend-amt">75 ₪</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent transactions -->
+        <section>
+          <div class="tx-date-label"><span>14 ביולי · שני</span><span>-195 ₪</span></div>
+          <div class="tx-row">
+            <span class="tx-icon" style="background:#FFC93C22;color:#E0A800;">🎮</span>
+            <div class="tx-info">
+              <div class="tx-title">חדר בריחה</div>
+              <div class="tx-meta"><span class="tx-badge">בילויים</span><span>11:18</span></div>
+            </div>
+            <div class="tx-amount neg">-195 ₪</div>
+          </div>
+
+          <div class="tx-date-label" style="margin-top:12px;"><span>12 ביולי · שבת</span><span>-572 ₪</span></div>
+          <div class="tx-row">
+            <span class="tx-icon" style="background:#05A67C22;color:#048C68;">🛒</span>
+            <div class="tx-info">
+              <div class="tx-title">קניות שבועיות</div>
+              <div class="tx-meta"><span class="tx-badge">סופרמרקט</span><span>19:42</span></div>
+            </div>
+            <div class="tx-amount neg">-572 ₪</div>
+          </div>
+          <div class="tx-row">
+            <span class="tx-icon" style="background:#05A67C22;color:#048C68;">💼</span>
+            <div class="tx-info">
+              <div class="tx-title">משכורת יולי</div>
+              <div class="tx-meta"><span class="tx-badge">משכורת</span><span>08:00</span></div>
+            </div>
+            <div class="tx-amount pos">+8,000 ₪</div>
+          </div>
+        </section>
+
+        <!-- Budgets -->
+        <section>
+          <h2 class="display" style="font-size:17px; font-weight:800; margin:2px 2px 10px;">תקציבים לפי קטגוריה</h2>
+
+          <div class="budget-card">
+            <div class="budget-top">
+              <div class="budget-left">
+                <span class="budget-icon" style="background:#05A67C22;color:#048C68;">🛒</span>
+                <span class="budget-name">סופרמרקט</span>
+              </div>
+              <span class="budget-amounts">572 ₪ / 800 ₪</span>
+            </div>
+            <div class="track"><div class="fill" style="width:71%; background:#05A67C;"></div></div>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-top">
+              <div class="budget-left">
+                <span class="budget-icon" style="background:#FF5A5A22;color:#FF5A5A;">🎮</span>
+                <span class="budget-name">בילויים</span>
+              </div>
+              <span class="budget-amounts" style="color:#FF5A5A; font-weight:700;">195 ₪ / 150 ₪</span>
+            </div>
+            <div class="track"><div class="fill" style="width:100%; background:#FF5A5A;"></div></div>
+          </div>
+
+          <button class="add-budget">+ הוספת תקציב לקטגוריה</button>
+        </section>
+
+      </main>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active"><span class="nav-icon">▦</span>דשבורד</button>
+      <button class="nav-btn"><span class="nav-icon">💬</span>צ'אט</button>
+    </nav>
+  </div>
+</div>
+
+<p class="note">תצוגה מקדימה סטטית — קובץ HTML עצמאי, אין צורך ב-npm או בהרצת שרת. פתחו אותו ישירות בדפדפן.</p>
+
+</body>
+</html>

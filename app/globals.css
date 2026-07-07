@@ -33,10 +33,16 @@
 
 html, body {
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
   font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  touch-action: manipulation;
 }
 
 .font-display {

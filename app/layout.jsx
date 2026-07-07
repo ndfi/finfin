@@ -21,6 +21,14 @@ export const metadata = {
   description: "מעקב הוצאות ותקציב משפחתי בעברית — צ׳אט חכם + דשבורד",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover", // required for env(safe-area-inset-bottom) in the bottom nav
+  themeColor: "#2FA88C",
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="he" dir="rtl" className={`${rubik.variable} ${frankRuhl.variable}`}>
