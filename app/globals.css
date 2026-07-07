@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — "household ledger" direction:
+ * a calm sage-paper background, deep forest green as the primary brand color
+ * (money "in the black"), warm gold for accents/positive progress, and a
+ * muted brick red reserved ONLY for over-budget states (functional, not decorative).
+ * Numbers/headings use a serif (Frank Ruhl Libre) to evoke a ledger book;
+ * UI chrome uses Rubik, a clean Hebrew-native sans.
+ */
+:root {
+  --bg: #F6F4EE;
+  --paper: #FFFFFF;
+  --ink: #2B2A28;
+
+  /* Primary brand duo, echoing the two-tone hero banner look: warm gold for
+     income/positive energy, teal for the "money is handled" calm state. */
+  --gold: #F0B429;
+  --gold-dark: #D89A12;
+  --teal: #2FA88C;
+  --teal-dark: #21806A;
+  --brick: #E0645C;
+
+  /* Kept for any legacy reference — now aliased to teal */
+  --forest: var(--teal);
+  --forest-dark: var(--teal-dark);
+
+  --font-body: "Rubik", system-ui, sans-serif;
+  --font-display: "Frank Ruhl Libre", serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Numeric figures throughout the dashboard use tabular lining numerals for
+   alignment in tables/progress bars, and the display serif for emphasis. */
+.figure {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Two-tone hero banner, echoing the gold->teal split from the reference app */
+.hero-gradient {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold) 42%, var(--teal) 58%, var(--teal) 100%);
+}
+
+.card-shadow {
+  box-shadow: 0 8px 24px -12px rgba(43, 42, 40, 0.18);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(38, 48, 43, 0.15);
+  border-radius: 8px;
+}
