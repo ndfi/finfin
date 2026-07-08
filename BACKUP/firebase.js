@@ -11,7 +11,7 @@ import { getFirestore } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCBBqoOwbkjFOnwPAHnsYo8IXrKMRSMFkU",
+   apiKey: "AIzaSyCBBqoOwbkjFOnwPAHnsYo8IXrKMRSMFkU",
       authDomain: "finishfin.firebaseapp.com",
       projectId: "finishfin",
       storageBucket: "finishfin.firebasestorage.app",
