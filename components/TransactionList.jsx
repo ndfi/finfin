@@ -17,9 +17,12 @@ import { getCategoryMeta } from "@/lib/categoryMeta";
  * Props:
  *  - items: monthlySummary.allItems (real transactions + active recurring
  *    projections) from buildMonthlySummary()
+ *  - onEdit(transaction): called when a real (non-projected) row is tapped.
+ *    Recurring projections have no Firestore doc `id`, so they render as
+ *    plain (non-interactive) rows instead of being wired to onEdit.
  * -------------------------------------------------------------------------
  */
-export default function TransactionList({ items }) {
+export default function TransactionList({ items, onEdit }) {
   if (!items?.length) {
     return (
       <div className="rounded-3xl border-2 border-dashed border-[var(--ink)]/12 p-8 text-center text-sm text-[var(--ink)]/45">
@@ -62,9 +65,17 @@ export default function TransactionList({ items }) {
                 const meta = getCategoryMeta(t.category);
                 const IconComp = Icons[meta.icon] || Icons.Wallet;
                 const isIncome = t.type === "income";
+                const editable = !t.isRecurringProjection && !!t.id;
+                const Row = editable ? "button" : "div";
 
                 return (
-                  <div key={t.id || i} className="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3 card-shadow-soft">
+                  <Row
+                    key={t.id || i}
+                    onClick={editable ? () => onEdit?.(t) : undefined}
+                    className={`w-full text-right flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3 card-shadow-soft ${
+                      editable ? "hover:shadow-md active:scale-[0.99] transition-all cursor-pointer" : ""
+                    }`}
+                  >
                     <span
                       className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: meta.color + "1F" }}
@@ -95,7 +106,7 @@ export default function TransactionList({ items }) {
                       {isIncome ? "+" : "-"}
                       {formatILS(t.amount)}
                     </span>
-                  </div>
+                  </Row>
                 );
               })}
             </div>

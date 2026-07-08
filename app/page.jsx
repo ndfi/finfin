@@ -25,6 +25,7 @@ import BudgetForm from "@/components/BudgetForm";
 import BalanceHeroCard from "@/components/BalanceHeroCard";
 import CategoryDonutCard from "@/components/CategoryDonutCard";
 import TransactionList from "@/components/TransactionList";
+import TransactionEditForm from "@/components/TransactionEditForm";
 import { IncomeExpenseBarChart } from "@/components/Charts";
 
 export default function HomePage() {
@@ -119,6 +120,7 @@ function Dashboard({ user }) {
   const [referenceDate, setReferenceDate] = useState(new Date());
   const [budgetFormOpen, setBudgetFormOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const [resetting, setResetting] = useState(false);
 
   const { transactions } = useMonthlyTransactions(referenceDate);
@@ -218,7 +220,7 @@ function Dashboard({ user }) {
 
           <div>
             <h2 className="font-display font-extrabold text-[17px] text-[var(--ink)] mb-3">תנועות אחרונות</h2>
-            <TransactionList items={monthlySummary.allItems} />
+            <TransactionList items={monthlySummary.allItems} onEdit={setEditingTransaction} />
           </div>
 
           <IncomeExpenseBarChart summary={sixMonthSummary} />
@@ -270,6 +272,10 @@ function Dashboard({ user }) {
           label="צ'אט"
         />
       </nav>
+
+      {editingTransaction && (
+        <TransactionEditForm transaction={editingTransaction} onClose={() => setEditingTransaction(null)} />
+      )}
     </div>
   );
 }
