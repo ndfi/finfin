@@ -70,7 +70,7 @@ function LoginScreen() {
           <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-2 bg-[var(--teal)]">
             <Wallet className="text-white" size={26} />
           </span>
-          <h1 className="font-display text-2xl font-bold text-[var(--ink)]">גבל'לי כספים</h1>
+          <h1 className="font-display text-2xl font-bold text-[var(--ink)]">פינפיננס</h1>
           <p className="text-sm text-[var(--ink)]/60 mt-1">ניהול תקציב משפחתי</p>
         </div>
 
@@ -176,7 +176,7 @@ function Dashboard({ user }) {
             <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 shrink-0">
               <Wallet size={18} />
             </span>
-            <h1 className="font-display font-bold text-[17px] truncate">גבל'לי כספים</h1>
+            <h1 className="font-display font-bold text-[17px] truncate">פינפיננס</h1>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">

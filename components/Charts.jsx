@@ -16,9 +16,9 @@ import {
 import { formatILS } from "@/lib/utils";
 
 const PALETTE = [
-  "#2FA88C", // teal
-  "#F0B429", // gold
-  "#E0645C", // brick
+  "#05A67C", // teal
+  "#FFC93C", // gold
+  "#FF5A5A", // coral
   "#4A7FBF",
   "#9B6BD1",
   "#E0648C",
@@ -40,8 +40,8 @@ export function ExpensePieChart({ byCategory }) {
   }
 
   return (
-    <div className="rounded-2xl border border-[var(--ink)]/10 bg-white p-4">
-      <h3 className="text-sm font-semibold text-[var(--ink)] mb-2">התפלגות הוצאות לפי קטגוריה</h3>
+    <div className="rounded-3xl bg-white p-[18px] card-shadow-soft">
+      <h3 className="text-[13px] font-bold text-[var(--ink)]/55 mb-3">התפלגות הוצאות לפי קטגוריה</h3>
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie data={data} dataKey="value" nameKey="name" innerRadius={55} outerRadius={95} paddingAngle={2}>
@@ -67,14 +67,23 @@ export function ExpensePieChart({ byCategory }) {
 /**
  * IncomeExpenseBarChart
  * summary: { "2026-02": { income, expense, label: Date }, ... } from useLastNMonthsSummary()
+ *
+ * Axis direction note: even inside an RTL page, time/numeric chart axes
+ * conventionally still run chronologically left-to-right (this matches
+ * how Hebrew banking/finance apps render charts — only text direction
+ * flips, not plotted data). The data here is already sorted oldest-first;
+ * previously an XAxis `reversed` prop flipped that, making the chart read
+ * backwards (newest month on the left). That prop is intentionally
+ * removed below. The value axis is moved to the right side, which reads
+ * more naturally as the first thing encountered in an RTL layout.
  */
 export function IncomeExpenseBarChart({ summary }) {
   const HEBREW_MONTHS_SHORT = ["ינו", "פבר", "מרץ", "אפר", "מאי", "יונ", "יול", "אוג", "ספט", "אוק", "נוב", "דצמ"];
 
   const data = Object.entries(summary)
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a], [b]) => a.localeCompare(b)) // oldest -> newest
     .map(([key, v]) => ({
-      month: `${HEBREW_MONTHS_SHORT[v.label.getMonth()]}`,
+      month: HEBREW_MONTHS_SHORT[v.label.getMonth()],
       הכנסות: v.income,
       הוצאות: v.expense,
     }));
@@ -84,20 +93,27 @@ export function IncomeExpenseBarChart({ summary }) {
   }
 
   return (
-    <div className="rounded-2xl border border-[var(--ink)]/10 bg-white p-4">
-      <h3 className="text-sm font-semibold text-[var(--ink)] mb-2">הכנסות מול הוצאות — 6 חודשים אחרונים</h3>
+    <div className="rounded-3xl bg-white p-[18px] card-shadow-soft">
+      <h3 className="text-[13px] font-bold text-[var(--ink)]/55 mb-3">הכנסות מול הוצאות — 6 חודשים אחרונים</h3>
       <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+        <BarChart data={data} margin={{ top: 8, right: 0, left: 0, bottom: 0 }} barCategoryGap="28%" barGap={4}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#00000010" />
-          <XAxis dataKey="month" tick={{ fontFamily: "var(--font-body)", fontSize: 12 }} reversed />
-          <YAxis tick={{ fontFamily: "var(--font-body)", fontSize: 11 }} />
+          <XAxis dataKey="month" tick={{ fontFamily: "var(--font-body)", fontSize: 12 }} axisLine={{ stroke: "#00000014" }} tickLine={false} />
+          <YAxis
+            orientation="right"
+            tick={{ fontFamily: "var(--font-body)", fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+            width={40}
+          />
           <Tooltip
             formatter={(value) => formatILS(value)}
             contentStyle={{ direction: "rtl", fontFamily: "var(--font-body)", borderRadius: 8 }}
+            cursor={{ fill: "#00000006" }}
           />
           <Legend formatter={(value) => <span style={{ fontFamily: "var(--font-body)", fontSize: 12 }}>{value}</span>} />
-          <Bar dataKey="הכנסות" fill="#2FA88C" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="הוצאות" fill="#E0645C" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="הכנסות" fill="#05A67C" radius={[4, 4, 0, 0]} maxBarSize={22} />
+          <Bar dataKey="הוצאות" fill="#FF5A5A" radius={[4, 4, 0, 0]} maxBarSize={22} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -106,7 +122,7 @@ export function IncomeExpenseBarChart({ summary }) {
 
 function EmptyState({ text }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[var(--ink)]/20 p-8 text-center text-sm text-[var(--ink)]/50">
+    <div className="rounded-3xl border-2 border-dashed border-[var(--ink)]/15 p-8 text-center text-sm text-[var(--ink)]/45">
       {text}
     </div>
   );

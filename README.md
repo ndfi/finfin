@@ -1,4 +1,4 @@
-# גבל'לי כספים — Household Finance App
+# פינפיננס — Household Finance App
 
 אפליקציית ניהול תקציב משפחתי היברידית: צ'אט בעברית + דשבורד ויזואלי.
 Built with Next.js (App Router) + Tailwind CSS + Firebase (Firestore + Auth) + Recharts + lucide-react.
@@ -118,6 +118,11 @@ A dependency-free `preview.html` (static HTML/CSS mockup, no npm required) is in
 ### 1.6.3 Round 4: Tailwind v4 compatibility
 
 If you installed dependencies fresh, `npm install tailwindcss` now resolves to **Tailwind CSS v4**, which changed two things this project depended on: the PostCSS plugin moved from `tailwindcss` itself to `@tailwindcss/postcss`, and the old `@tailwind base/components/utilities;` directives in CSS were replaced by a single `@import "tailwindcss";`. Both `postcss.config.js` and `app/globals.css` are now written for v4, with `@config "../tailwind.config.js";` added so the custom color/font-family tokens in `tailwind.config.js` still apply under v4's config model. This was verified with a real `next build` against Tailwind v4.3.2 before delivery, not just a syntax check.
+
+### 1.6.4 Round 5: app rename + chart axis fix
+
+- **Renamed** the app from "גבל'לי כספים" to **פינפיננס** everywhere (header, login screen, browser tab title, this README, `preview.html`).
+- **Fixed the 6-month bar chart running backwards**: `components/Charts.jsx` had an `XAxis reversed` prop left over from an earlier RTL experiment, which made the months render newest-to-oldest left-to-right (e.g. July, June, May... instead of February, March, April...). Time/numeric chart axes conventionally stay chronological left-to-right even inside an RTL page — only text direction flips, not plotted data (this matches how Hebrew banking apps render their charts). That prop is removed; the value (₪) axis was also moved to the right side, which reads more naturally as the first thing encountered in RTL, and bar sizing/spacing was tightened up.
 
 ### 1.7 File layout
 

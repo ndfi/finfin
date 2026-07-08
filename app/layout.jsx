@@ -17,7 +17,7 @@ const frankRuhl = Frank_Ruhl_Libre({
 });
 
 export const metadata = {
-  title: "גבל'לי כספים — ניהול תקציב משפחתי",
+  title: "פינפיננס — ניהול תקציב משפחתי",
   description: "מעקב הוצאות ותקציב משפחתי בעברית — צ׳אט חכם + דשבורד",
 };
 
