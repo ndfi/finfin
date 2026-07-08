@@ -23,6 +23,8 @@ import ChatInterface from "@/components/ChatInterface";
 import BudgetProgress from "@/components/BudgetProgress";
 import BudgetForm from "@/components/BudgetForm";
 import BalanceHeroCard from "@/components/BalanceHeroCard";
+import CategoryDonutCard from "@/components/CategoryDonutCard";
+import TransactionList from "@/components/TransactionList";
 import { IncomeExpenseBarChart } from "@/components/Charts";
 
 export default function HomePage() {
@@ -65,7 +67,7 @@ function LoginScreen() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg)]">
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white rounded-3xl card-shadow p-6 space-y-4">
         <div className="text-center mb-2">
-          <span className="hero-gradient inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-2">
+          <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-2 bg-[var(--teal)]">
             <Wallet className="text-white" size={26} />
           </span>
           <h1 className="font-display text-2xl font-bold text-[var(--ink)]">גבל'לי כספים</h1>
@@ -95,12 +97,12 @@ function LoginScreen() {
           />
         </div>
 
-        {error && <p className="text-xs text-[var(--brick)]">{error}</p>}
+        {error && <p className="text-xs text-[var(--coral)]">{error}</p>}
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-xl bg-[var(--teal)] text-white py-3.5 text-sm font-medium hover:bg-[var(--teal-dark)] active:scale-[0.98] transition-all disabled:opacity-60"
+          className="w-full rounded-xl bg-[var(--teal)] text-white py-3.5 text-sm font-medium hover:bg-[var(--teal-deep)] active:scale-[0.98] transition-all disabled:opacity-60"
         >
           {busy ? "מתחבר/ת..." : "התחברות"}
         </button>
@@ -142,6 +144,13 @@ function Dashboard({ user }) {
     setBudgetFormOpen(true);
   }
 
+  // Quick-add pills on the balance card jump straight to the chat tab,
+  // which is where actual logging happens — keeps a single source of truth
+  // for "how a transaction gets created" instead of a second form to maintain.
+  function handleQuickAdd() {
+    setMobileTab("chat");
+  }
+
   async function handleResetMonth() {
     const confirmed = window.confirm(
       `לאפס את כל הנתונים של ${monthLabelHebrew(referenceDate)}? הפעולה תמחק את כל התנועות שנרשמו ידנית בחודש זה ולא ניתנת לביטול.`
@@ -158,12 +167,10 @@ function Dashboard({ user }) {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg)]">
       {/* ------------------------------------------------------------------
-          Header — two clear rows so nothing competes for space on narrow
-          screens: brand + account actions on row 1, month switcher on row 2.
-          All tappable icons are 40x40 with a visible background so they
-          read as buttons, not decoration.
+          Header — solid brand color, rounded bottom corners, two clear
+          rows so nothing competes for space on narrow screens.
       ------------------------------------------------------------------ */}
-      <header className="hero-gradient sticky top-0 z-20 text-white">
+      <header className="bg-[var(--teal)] sticky top-0 z-20 text-white rounded-b-[28px] card-shadow">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <div className="flex items-center gap-2 min-w-0">
             <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 shrink-0">
@@ -194,23 +201,30 @@ function Dashboard({ user }) {
       </header>
 
       {!isCurrentMonth && (
-        <div className="bg-[var(--gold)]/15 text-[var(--gold-dark)] text-xs text-center py-2 px-4">
+        <div className="bg-[var(--gold)]/20 text-[var(--gold-deep)] text-xs text-center py-2 px-4 font-medium">
           מציג נתונים היסטוריים ·{" "}
-          <button onClick={() => setReferenceDate(new Date())} className="underline font-medium">
+          <button onClick={() => setReferenceDate(new Date())} className="underline font-bold">
             חזרה לחודש הנוכחי
           </button>
         </div>
       )}
 
-      <main className="flex-1 grid lg:grid-cols-[1fr_400px] gap-4 p-4 pb-24 lg:pb-4 max-w-6xl mx-auto w-full">
+      <main className="flex-1 grid lg:grid-cols-[1fr_400px] gap-4 p-4 pb-28 lg:pb-4 max-w-6xl mx-auto w-full">
         {/* Dashboard column */}
         <section className={`space-y-4 ${mobileTab === "chat" ? "hidden lg:block" : "block"}`}>
-          <BalanceHeroCard summary={monthlySummary} monthLabel={monthLabelHebrew(referenceDate)} />
+          <BalanceHeroCard summary={monthlySummary} monthLabel={monthLabelHebrew(referenceDate)} onQuickAdd={handleQuickAdd} />
+
+          <CategoryDonutCard byCategory={monthlySummary.byCategory} />
+
+          <div>
+            <h2 className="font-display font-extrabold text-[17px] text-[var(--ink)] mb-3">תנועות אחרונות</h2>
+            <TransactionList items={monthlySummary.allItems} />
+          </div>
 
           <IncomeExpenseBarChart summary={sixMonthSummary} />
 
           <div>
-            <h2 className="font-display font-bold text-lg text-[var(--ink)] mb-3">תקציבים לפי קטגוריה</h2>
+            <h2 className="font-display font-extrabold text-[17px] text-[var(--ink)] mb-3">תקציבים לפי קטגוריה</h2>
             {budgetFormOpen ? (
               <BudgetForm
                 existingBudgets={budgets}
@@ -235,28 +249,26 @@ function Dashboard({ user }) {
       </main>
 
       {/* ------------------------------------------------------------------
-          Bottom tab bar (mobile only) — thumb-reachable primary nav instead
-          of a top tab strip, with a floating pill indicator on the active
-          tab and generous 56px-tall touch targets.
+          Bottom tab bar (mobile only) — dark floating pill, thumb-reachable,
+          with a solid teal pill marking the active tab (matches the bold
+          reference style instead of a pale translucent strip).
       ------------------------------------------------------------------ */}
       <nav
-        className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-white/95 backdrop-blur border-t border-[var(--ink)]/8 px-4 pt-2"
-        style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+        className="lg:hidden fixed bottom-3.5 inset-x-3.5 z-20 bg-[var(--ink)] rounded-full p-1.5 card-shadow flex gap-1"
+        style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
       >
-        <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto">
-          <BottomTabButton
-            active={mobileTab === "dashboard"}
-            onClick={() => setMobileTab("dashboard")}
-            icon={LayoutDashboard}
-            label="דשבורד"
-          />
-          <BottomTabButton
-            active={mobileTab === "chat"}
-            onClick={() => setMobileTab("chat")}
-            icon={MessageCircle}
-            label="צ'אט"
-          />
-        </div>
+        <BottomTabButton
+          active={mobileTab === "dashboard"}
+          onClick={() => setMobileTab("dashboard")}
+          icon={LayoutDashboard}
+          label="דשבורד"
+        />
+        <BottomTabButton
+          active={mobileTab === "chat"}
+          onClick={() => setMobileTab("chat")}
+          icon={MessageCircle}
+          label="צ'אט"
+        />
       </nav>
     </div>
   );
@@ -281,12 +293,12 @@ function BottomTabButton({ active, onClick, icon: Icon, label }) {
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl transition-colors ${
-        active ? "bg-[var(--teal)]/12 text-[var(--teal)]" : "text-[var(--ink)]/45"
+      className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-full transition-colors ${
+        active ? "bg-[var(--teal)] text-white" : "text-white/50"
       }`}
     >
-      <Icon size={20} />
-      <span className="text-[11px] font-medium">{label}</span>
+      <Icon size={18} />
+      <span className="text-[11px] font-bold">{label}</span>
     </button>
   );
 }

@@ -27,7 +27,7 @@ export default function BudgetProgress({ budgets, byCategory, onEdit, onAddNew }
           <button
             key={b.id}
             onClick={() => onEdit?.(b)}
-            className="w-full text-right rounded-2xl border border-[var(--ink)]/8 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+            className="w-full text-right rounded-3xl bg-white p-4 card-shadow-soft hover:shadow-md transition-shadow"
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2.5">
@@ -65,7 +65,7 @@ export default function BudgetProgress({ budgets, byCategory, onEdit, onAddNew }
 
       <button
         onClick={onAddNew}
-        className="w-full rounded-2xl border-2 border-dashed border-[var(--ink)]/15 p-4 flex items-center justify-center gap-2 text-sm text-[var(--ink)]/50 hover:border-[var(--teal)] hover:text-[var(--teal)] transition-colors"
+        className="w-full rounded-3xl border-2 border-dashed border-[var(--ink)]/15 p-4 flex items-center justify-center gap-2 text-sm text-[var(--ink)]/50 hover:border-[var(--teal)] hover:text-[var(--teal)] transition-colors"
       >
         <Plus size={16} />
         הוספת תקציב לקטגוריה

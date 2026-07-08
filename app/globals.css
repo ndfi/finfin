@@ -11,21 +11,26 @@
  * UI chrome uses Rubik, a clean Hebrew-native sans.
  */
 :root {
-  --bg: #F6F4EE;
+  --bg: #F3F1EC;
   --paper: #FFFFFF;
-  --ink: #2B2A28;
+  --ink: #17181C;
 
-  /* Primary brand duo, echoing the two-tone hero banner look: warm gold for
-     income/positive energy, teal for the "money is handled" calm state. */
-  --gold: #F0B429;
-  --gold-dark: #D89A12;
-  --teal: #2FA88C;
-  --teal-dark: #21806A;
-  --brick: #E0645C;
+  /* Bold, saturated brand palette (solid, not gradient — the earlier
+     diagonal gradient read as flat/dated at real device sizes).
+     teal = primary brand + income, coral = expense/over-budget,
+     gold = secondary accent for CTAs and highlights. */
+  --teal: #05A67C;
+  --teal-deep: #048C68;
+  --coral: #FF5A5A;
+  --gold: #FFC93C;
+  --gold-deep: #E0A800;
+  --brick: var(--coral);
 
-  /* Kept for any legacy reference — now aliased to teal */
+  /* Legacy aliases kept so nothing else needs renaming */
   --forest: var(--teal);
-  --forest-dark: var(--teal-dark);
+  --forest-dark: var(--teal-deep);
+  --teal-dark: var(--teal-deep);
+  --gold-dark: var(--gold-deep);
 
   --font-body: "Rubik", system-ui, sans-serif;
   --font-display: "Frank Ruhl Libre", serif;
@@ -56,13 +61,18 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* Two-tone hero banner, echoing the gold->teal split from the reference app */
+/* Solid brand color for the header/hero card — replaces the earlier
+   diagonal gold->teal gradient, which read as flat rather than bold. */
 .hero-gradient {
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold) 42%, var(--teal) 58%, var(--teal) 100%);
+  background: var(--teal);
 }
 
 .card-shadow {
-  box-shadow: 0 8px 24px -12px rgba(43, 42, 40, 0.18);
+  box-shadow: 0 12px 32px -14px rgba(23, 24, 28, 0.22);
+}
+
+.card-shadow-soft {
+  box-shadow: 0 4px 14px -8px rgba(23, 24, 28, 0.16);
 }
 
 ::-webkit-scrollbar {
