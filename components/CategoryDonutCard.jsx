@@ -13,9 +13,9 @@ import { getCategoryMeta } from "@/lib/categoryMeta";
  * regardless of ancestor flex/grid context.
  * -------------------------------------------------------------------------
  */
-export default function CategoryDonutCard({ byCategory }) {
+export default function CategoryDonutCard({ byCategory, mergedMeta }) {
   const data = Object.entries(byCategory)
-    .map(([name, value]) => ({ name, value, ...getCategoryMeta(name) }))
+    .map(([name, value]) => ({ name, value, ...getCategoryMeta(name, mergedMeta) }))
     .sort((a, b) => b.value - a.value);
 
   const total = data.reduce((sum, d) => sum + d.value, 0);

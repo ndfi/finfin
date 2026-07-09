@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import * as Icons from "lucide-react";
 import { X, Trash2 } from "lucide-react";
-import { EXPENSE_CATEGORY_META, INCOME_CATEGORY_META } from "@/lib/categoryMeta";
 import { updateTransaction, deleteTransaction } from "@/lib/hooks";
+import CategoryPicker from "@/components/CategoryPicker";
 
 /**
  * TransactionEditForm
@@ -17,24 +16,23 @@ import { updateTransaction, deleteTransaction } from "@/lib/hooks";
  *
  * Props:
  *  - transaction: the transaction object being edited (has `id`)
+ *  - mergedMeta: { expense, income } from mergeCategoryMeta()
+ *  - userId: passed through to CategoryPicker for `createdBy` on new categories
  *  - onClose(): called after save/delete/cancel
  * -------------------------------------------------------------------------
  */
-export default function TransactionEditForm({ transaction, onClose }) {
+export default function TransactionEditForm({ transaction, mergedMeta, userId, onClose }) {
   const [type, setType] = useState(transaction.type);
   const [category, setCategory] = useState(transaction.category);
   const [amount, setAmount] = useState(String(transaction.amount));
   const [description, setDescription] = useState(transaction.description || "");
   const [saving, setSaving] = useState(false);
 
-  const categoryMeta = type === "income" ? INCOME_CATEGORY_META : EXPENSE_CATEGORY_META;
-  const categories = Object.entries(categoryMeta);
-
   function handleTypeSwitch(newType) {
     setType(newType);
     // If the current category doesn't exist under the new type, clear it
     // so the user picks a valid one instead of silently keeping a mismatch.
-    const validForNewType = newType === "income" ? INCOME_CATEGORY_META : EXPENSE_CATEGORY_META;
+    const validForNewType = newType === "income" ? mergedMeta.income : mergedMeta.expense;
     if (!validForNewType[category]) setCategory(null);
   }
 
@@ -102,25 +100,15 @@ export default function TransactionEditForm({ transaction, onClose }) {
 
         {/* Category picker */}
         <p className="text-xs text-[var(--ink)]/50 mb-2">קטגוריה</p>
-        <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 mb-4">
-          {categories.map(([name, meta]) => {
-            const IconComp = Icons[meta.icon] || Icons.Wallet;
-            const selected = category === name;
-            return (
-              <button key={name} type="button" onClick={() => setCategory(name)} className="flex flex-col items-center gap-1.5">
-                <span
-                  className="flex items-center justify-center w-12 h-12 rounded-full transition-all"
-                  style={{
-                    backgroundColor: selected ? meta.color : meta.color + "1A",
-                    boxShadow: selected ? `0 0 0 3px ${meta.color}40` : "none",
-                  }}
-                >
-                  <IconComp size={20} color={selected ? "#fff" : meta.color} />
-                </span>
-                <span className="text-[10px] text-[var(--ink)]/70 text-center leading-tight">{name}</span>
-              </button>
-            );
-          })}
+        <div className="mb-4">
+          <CategoryPicker
+            type={type}
+            mergedMeta={mergedMeta}
+            selected={category}
+            onSelect={setCategory}
+            onCreated={setCategory}
+            userId={userId}
+          />
         </div>
 
         {/* Amount */}

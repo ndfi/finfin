@@ -24,7 +24,7 @@ import { formatILS } from "@/lib/utils";
  *  - "unrecognized" messages get a helpful example-based nudge.
  * -------------------------------------------------------------------------
  */
-export default function ChatInterface({ user, monthlySummary, budgets }) {
+export default function ChatInterface({ user, monthlySummary, budgets, customCategories = [] }) {
   const [messages, setMessages] = useState([
     {
       id: "welcome",
@@ -129,7 +129,7 @@ export default function ChatInterface({ user, monthlySummary, budgets }) {
       return;
     }
 
-    const parsed = parseHebrewMessage(text);
+    const parsed = parseHebrewMessage(text, customCategories);
 
     if (parsed.kind === "query") {
       answerQuery(parsed);

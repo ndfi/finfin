@@ -1,39 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import * as Icons from "lucide-react";
-import { EXPENSE_CATEGORY_META } from "@/lib/categoryMeta";
 import { setBudget, deleteBudget } from "@/lib/hooks";
+import { getCategoryMeta } from "@/lib/categoryMeta";
+import CategoryPicker from "@/components/CategoryPicker";
 
 /**
  * BudgetForm
  * -------------------------------------------------------------------------
  * A small inline panel (not a full modal, keeps it mobile-friendly) for
  * creating or editing a per-category monthly budget goal. Category is
- * picked from a grid of colored circular icon buttons — matching the
- * "צור קטגוריות משלך" picker style from the reference app.
+ * picked via the shared CategoryPicker, which also lets the user create a
+ * brand new category on the spot if none of the existing ones fit.
  *
  * Props:
  *  - existingBudgets: current budgets array, so we can hide categories that
  *    already have a goal set (and instead let the user tap one to edit it).
  *  - editingBudget: budget doc to edit, or null when creating new.
+ *  - mergedMeta: { expense, income } from mergeCategoryMeta() — built-in +
+ *    custom categories combined.
+ *  - userId: passed through to CategoryPicker for `createdBy` on new categories.
  *  - onClose: called after save/cancel/delete.
  * -------------------------------------------------------------------------
  */
-export default function BudgetForm({ existingBudgets, editingBudget, onClose }) {
+export default function BudgetForm({ existingBudgets, editingBudget, mergedMeta, userId, onClose }) {
   const usedCategories = new Set(existingBudgets.map((b) => b.categoryName));
   const [category, setCategory] = useState(editingBudget?.categoryName || null);
   const [limit, setLimit] = useState(editingBudget?.monthlyLimit?.toString() || "");
   const [saving, setSaving] = useState(false);
 
-  const availableCategories = Object.entries(EXPENSE_CATEGORY_META).filter(
-    ([name]) => name === editingBudget?.categoryName || !usedCategories.has(name)
+  // Budgets only apply to expense categories, and hide ones that already
+  // have a budget (unless it's the one currently being edited).
+  const availableExpenseMeta = Object.fromEntries(
+    Object.entries(mergedMeta.expense).filter(
+      ([name]) => name === editingBudget?.categoryName || !usedCategories.has(name)
+    )
   );
+  const filteredMergedMeta = { expense: availableExpenseMeta, income: {} };
 
   async function handleSave() {
     if (!category || !limit || Number(limit) <= 0) return;
     setSaving(true);
-    const meta = EXPENSE_CATEGORY_META[category];
+    const meta = getCategoryMeta(category, mergedMeta);
     try {
       await setBudget({
         id: editingBudget?.id,
@@ -66,30 +74,15 @@ export default function BudgetForm({ existingBudgets, editingBudget, onClose }) 
       </h3>
 
       <p className="text-xs text-[var(--ink)]/50 mb-2">בחר/י קטגוריה</p>
-      <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 mb-5">
-        {availableCategories.map(([name, meta]) => {
-          const IconComp = Icons[meta.icon] || Icons.Wallet;
-          const selected = category === name;
-          return (
-            <button
-              key={name}
-              type="button"
-              onClick={() => setCategory(name)}
-              className="flex flex-col items-center gap-1.5 group"
-            >
-              <span
-                className="flex items-center justify-center w-12 h-12 rounded-full transition-all"
-                style={{
-                  backgroundColor: selected ? meta.color : meta.color + "1A",
-                  boxShadow: selected ? `0 0 0 3px ${meta.color}40` : "none",
-                }}
-              >
-                <IconComp size={20} color={selected ? "#fff" : meta.color} />
-              </span>
-              <span className="text-[10px] text-[var(--ink)]/70 text-center leading-tight">{name}</span>
-            </button>
-          );
-        })}
+      <div className="mb-5">
+        <CategoryPicker
+          type="expense"
+          mergedMeta={filteredMergedMeta}
+          selected={category}
+          onSelect={setCategory}
+          onCreated={setCategory}
+          userId={userId}
+        />
       </div>
 
       <label className="text-xs font-medium text-[var(--ink)]/70">תקציב חודשי (₪)</label>
@@ -115,7 +108,7 @@ export default function BudgetForm({ existingBudgets, editingBudget, onClose }) 
           <button
             onClick={handleDelete}
             disabled={saving}
-            className="rounded-xl border border-[var(--brick)]/30 text-[var(--brick)] px-4 py-2.5 text-sm font-medium hover:bg-[var(--brick)]/5 transition-colors"
+            className="rounded-xl border border-[var(--coral)]/30 text-[var(--coral)] px-4 py-2.5 text-sm font-medium hover:bg-[var(--coral)]/5 transition-colors"
           >
             מחיקה
           </button>

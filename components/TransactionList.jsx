@@ -20,9 +20,11 @@ import { getCategoryMeta } from "@/lib/categoryMeta";
  *  - onEdit(transaction): called when a real (non-projected) row is tapped.
  *    Recurring projections have no Firestore doc `id`, so they render as
  *    plain (non-interactive) rows instead of being wired to onEdit.
+ *  - mergedMeta: { expense, income } from mergeCategoryMeta(), so custom
+ *    categories resolve to their real icon/color instead of the fallback.
  * -------------------------------------------------------------------------
  */
-export default function TransactionList({ items, onEdit }) {
+export default function TransactionList({ items, onEdit, mergedMeta }) {
   if (!items?.length) {
     return (
       <div className="rounded-3xl border-2 border-dashed border-[var(--ink)]/12 p-8 text-center text-sm text-[var(--ink)]/45">
@@ -62,7 +64,7 @@ export default function TransactionList({ items, onEdit }) {
 
             <div className="space-y-2">
               {group.items.map((t, i) => {
-                const meta = getCategoryMeta(t.category);
+                const meta = getCategoryMeta(t.category, mergedMeta);
                 const IconComp = Icons[meta.icon] || Icons.Wallet;
                 const isIncome = t.type === "income";
                 const editable = !t.isRecurringProjection && !!t.id;

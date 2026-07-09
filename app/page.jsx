@@ -16,9 +16,11 @@ import {
   useLastNMonthsSummary,
   useBudgets,
   useRecurring,
+  useCategories,
   resetMonthTransactions,
 } from "@/lib/hooks";
 import { buildMonthlySummary, monthLabelHebrew } from "@/lib/utils";
+import { mergeCategoryMeta } from "@/lib/categoryMeta";
 import ChatInterface from "@/components/ChatInterface";
 import BudgetProgress from "@/components/BudgetProgress";
 import BudgetForm from "@/components/BudgetForm";
@@ -126,8 +128,10 @@ function Dashboard({ user }) {
   const { transactions } = useMonthlyTransactions(referenceDate);
   const { recurring } = useRecurring();
   const { budgets } = useBudgets();
+  const { categories } = useCategories();
   const { summary: sixMonthSummary } = useLastNMonthsSummary(6);
 
+  const mergedMeta = mergeCategoryMeta(categories);
   const monthlySummary = buildMonthlySummary(transactions, recurring, referenceDate);
   const isCurrentMonth =
     referenceDate.getMonth() === new Date().getMonth() && referenceDate.getFullYear() === new Date().getFullYear();
@@ -216,11 +220,11 @@ function Dashboard({ user }) {
         <section className={`space-y-4 ${mobileTab === "chat" ? "hidden lg:block" : "block"}`}>
           <BalanceHeroCard summary={monthlySummary} monthLabel={monthLabelHebrew(referenceDate)} onQuickAdd={handleQuickAdd} />
 
-          <CategoryDonutCard byCategory={monthlySummary.byCategory} />
+          <CategoryDonutCard byCategory={monthlySummary.byCategory} mergedMeta={mergedMeta} />
 
           <div>
             <h2 className="font-display font-extrabold text-[17px] text-[var(--ink)] mb-3">תנועות אחרונות</h2>
-            <TransactionList items={monthlySummary.allItems} onEdit={setEditingTransaction} />
+            <TransactionList items={monthlySummary.allItems} onEdit={setEditingTransaction} mergedMeta={mergedMeta} />
           </div>
 
           <IncomeExpenseBarChart summary={sixMonthSummary} />
@@ -231,6 +235,8 @@ function Dashboard({ user }) {
               <BudgetForm
                 existingBudgets={budgets}
                 editingBudget={editingBudget}
+                mergedMeta={mergedMeta}
+                userId={user?.uid}
                 onClose={() => setBudgetFormOpen(false)}
               />
             ) : (
@@ -246,7 +252,7 @@ function Dashboard({ user }) {
 
         {/* Chat column */}
         <section className={`h-[calc(100vh-13rem)] lg:h-[calc(100vh-8rem)] ${mobileTab === "dashboard" ? "hidden lg:block" : "block"}`}>
-          <ChatInterface user={user} monthlySummary={monthlySummary} budgets={budgets} />
+          <ChatInterface user={user} monthlySummary={monthlySummary} budgets={budgets} customCategories={categories} />
         </section>
       </main>
 
@@ -274,7 +280,12 @@ function Dashboard({ user }) {
       </nav>
 
       {editingTransaction && (
-        <TransactionEditForm transaction={editingTransaction} onClose={() => setEditingTransaction(null)} />
+        <TransactionEditForm
+          transaction={editingTransaction}
+          mergedMeta={mergedMeta}
+          userId={user?.uid}
+          onClose={() => setEditingTransaction(null)}
+        />
       )}
     </div>
   );
